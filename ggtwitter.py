@@ -10,10 +10,10 @@ TWITTER_URL = ['https://twitter.com/', '/status/']
 
 
 class GGTwitter:
-    ACCESS_TOKEN = "748244928409407488-1QyZmepu7rdzambxcZuNcYu6rJqSvuz"
-    ACCESS_SECRET = "NFvg5KrkBlEpOLC4rj7poftK5ywoMJpcKvHtdFQUjcmTI"
-    CONSUMER_KEY = "CxRj5nZiZwtiTq44jWagTr131"
-    CONSUMER_SECRET = "at7Ya8uPX57x6Qwzgk30fsP0q02zXPe61cGksHXgaRQ8YY5m5O"
+    ACCESS_TOKEN="748244928409407488-LRm5jW4xkHrmZmUOy0CTWYSaaPP0fUv"
+    ACCESS_SECRET="WKcXEFSVNXHqvg7rNqXFkfEjt6Oewwp4uS4iey55k1VgW"
+    CONSUMER_KEY="H00DTTXUlEFEw2YQa1bijHb7r"
+    CONSUMER_SECRET="lRlv0UxiLhzlnFibAhzNwAeAJBwHwjm9UHAiKngpXhDKYg6eFv"
     no_of_posts = None
     weight = None
     page = None
