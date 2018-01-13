@@ -5,22 +5,20 @@ from calendar import timegm
 import requests
 import json
 
-posts = []
-images = []
-videos = []
-fb = {}
-
-TMP_TOKEN = 'EAACEdEose0cBAE0k6aqICOz4lmPuF6IXKNSVLGRslY3e6ZAWC3ES2pChGXZA2e2IOCWyN1duUDQMXeZCtT5gKAM4CwQ2UOQjTWexnBxtW6BP5oNjHZBxdVZCx7Fce0CPF1IdRdmD1kzz3Mjb76fkvY1IWJAxsjW50C7oZAQOjAsHIc8TmaNCUI0hT2d3ZClWSeB2P0hIFQXbgZDZD'
+TMP_TOKEN = 'EAACEdEose0cBACvYlc3kFWuOMotBFZBlCKkCmFoPt2BxT2GSzKAp5pqd7ImD7pku75rBft4ZCD9qDmDjhoiA7MoTrbkYpdNhAiZBssOQUy2A3g8vLZAyaOhn4eoSZBTaF4tMPe6uc1UvFhbVMZAPKMjNnN2SEbtxEYJoUjQ0dBXGsOTPyRIx1MD0ynZC0x2gJVMzUIWdRafvx2ugraX6gzR'
 PER_TOKEN = 'EAACEdEose0cBAE0k6aqICOz4lmPuF6IXKNSVLGRslY3e6ZAWC3ES2pChGXZA2e2IOCWyN1duUDQMXeZCtT5gKAM4CwQ2UOQjTWexnBxtW6BP5oNjHZBxdVZCx7Fce0CPF1IdRdmD1kzz3Mjb76fkvY1IWJAxsjW50C7oZAQOjAsHIc8TmaNCUI0hT2d3ZClWSeB2P0hIFQXbgZDZD'
 
 
-class ggfb():
+class GGFB():
     url = None
     seconds = None
     no_of_posts = None
     time_gap = None
     graph = GraphAPI(oauth_token=TMP_TOKEN, version='2.10')
-
+    posts = []
+    images = []
+    videos = []
+    fb = {}
     def fun_feeds(self):
         json = self.graph.get(self.url + '/feed?limit=' + str(self.no_of_posts) + '&since=' + str(self.time_gap) +"&fields=created_time,reactions.limit(0).summary(total_count),comments.limit(0).summary(total_count),message,link")["data"]
         for feed in json:
@@ -31,14 +29,12 @@ class ggfb():
             post['caption'] = feed.get('message')
             post['id'] = feed['id']
             post['channel']="fb"
-            post["attachment"]=None
-            if "link" in feed:
-              post['attachment'] = feed["link"]
+            post["attachment"]=feed.get("link")
             post['weight'] = 'None'
             post['type']="post"
             post['url'] = 'www.facebook.com' + str(feed['id'])
             post['embed'] = 'https://www.facebook.com/plugins/post.php?href=https%3A%2F%2Fwww.facebook.com%2F' + self.url + '%2Fposts%2F' + str(feed['id'].split('_')[1])
-            posts.append(post.copy())
+            self.posts.append(post.copy())
     def fun_images(self):
         json = self.graph.get(self.url + '/photos?limit=' + str(self.no_of_posts) + '&since=' + str(self.time_gap) +"&fields=created_time,reactions.limit(0).summary(total_count),comments.limit(0).summary(total_count),message,link")["data"]
         for photo in json:
@@ -48,13 +44,11 @@ class ggfb():
             image['timestamp'] = timegm(time.strptime(photo['created_time'], '%Y-%m-%dT%H:%M:%S+0000'))
             image['id'] = photo['id']
             image['channel']="fb"
-            image["attachment"]=None
-            if "link" in photo:
-              image['attachment'] = photo["link"]
+            image["attachment"]=photo.get('link')
             image['weight'] = 'None'
             image['type']='photo'
             image['url'] = 'www.facebook.com' + str(photo['id'])
-            images.append(image)
+            self.images.append(image)
 
     def fun_videos(self):
         json = self.graph.get(self.url + '/videos?limit=' + str(self.no_of_posts) + '&since=' + str(self.time_gap) +"&fields=created_time,reactions.limit(0).summary(total_count),comments.limit(0).summary(total_count),description,link")["data"]
@@ -65,28 +59,33 @@ class ggfb():
             video['timestamp'] = timegm(time.strptime(vid['created_time'], '%Y-%m-%dT%H:%M:%S+0000'))
             video['caption'] = vid.get('description')  ##very less captions
             video['id'] = vid['id']
-            video["attachment"]=None
-            if "link" in vid:
-              video['attachment'] = vid["link"]
+            video["attachment"]=vid.get('link')
             video['channel']="fb"
             video['weight'] = 'None'
             video['type']='video'
             video['url'] = 'www.facebook.com' + str(vid['id'])
             video['embed'] = 'https://www.facebook.com/plugins/video.php?href=https%3A%2F%2Fwww.facebook.com%2F' + self.url + '%2Fvideos%2F' + str(vid['id']) + '%2F'
-            videos.append(video)
+            self.videos.append(video)
 
+    
     def __init__(self, url, seconds, no_of_posts):
+        self.posts = []
+        self.images = []
+        self.videos = []
+        self.fb = {}
         self.url = url
         self.seconds = seconds
         self.no_of_posts = no_of_posts
         self.time_gap = timegm(datetime.utcnow().utctimetuple()) - self.seconds
     def fun_all(self):
+        
         self.fun_feeds()
         self.fun_images()
         self.fun_videos()
-        final_data = {'post': posts,
-             'photo': images,
-             'video': videos}
+        final_data = {'post': self.posts,
+             'photo': self.images,
+             'video': self.videos}
+        print len(final_data['post'])    
         return final_data
 
 if __name__ == '__main__':
