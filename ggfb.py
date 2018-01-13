@@ -10,8 +10,8 @@ images = []
 videos = []
 fb = {}
 
-TMP_TOKEN = 'EAACEdEose0cBAJaZBbKUvWvNCBmb8iEEgv9F9LyAJFaZCHLaS9xFLbjuAyP5vOQgE8zRTJHhLbnnfZAaZCzCxi1Sf2mpKqst5onwxAZAuDXnJxZAXFXRGHLZBu6JnBasoJnEQaCEbwuIGefvIQp2jcxgPp8ZCIxq6IDPVzdQmg7HwZABjkR6qg3EsWw5rNfg6E2j1VVZBFsiPytQZDZD'
-PER_TOKEN = 'EAACEdEose0cBAJaZBbKUvWvNCBmb8iEEgv9F9LyAJFaZCHLaS9xFLbjuAyP5vOQgE8zRTJHhLbnnfZAaZCzCxi1Sf2mpKqst5onwxAZAuDXnJxZAXFXRGHLZBu6JnBasoJnEQaCEbwuIGefvIQp2jcxgPp8ZCIxq6IDPVzdQmg7HwZABjkR6qg3EsWw5rNfg6E2j1VVZBFsiPytQZDZD'
+TMP_TOKEN = 'EAACEdEose0cBAE0k6aqICOz4lmPuF6IXKNSVLGRslY3e6ZAWC3ES2pChGXZA2e2IOCWyN1duUDQMXeZCtT5gKAM4CwQ2UOQjTWexnBxtW6BP5oNjHZBxdVZCx7Fce0CPF1IdRdmD1kzz3Mjb76fkvY1IWJAxsjW50C7oZAQOjAsHIc8TmaNCUI0hT2d3ZClWSeB2P0hIFQXbgZDZD'
+PER_TOKEN = 'EAACEdEose0cBAE0k6aqICOz4lmPuF6IXKNSVLGRslY3e6ZAWC3ES2pChGXZA2e2IOCWyN1duUDQMXeZCtT5gKAM4CwQ2UOQjTWexnBxtW6BP5oNjHZBxdVZCx7Fce0CPF1IdRdmD1kzz3Mjb76fkvY1IWJAxsjW50C7oZAQOjAsHIc8TmaNCUI0hT2d3ZClWSeB2P0hIFQXbgZDZD'
 
 
 class ggfb():
@@ -22,7 +22,7 @@ class ggfb():
     graph = GraphAPI(oauth_token=TMP_TOKEN, version='2.10')
 
     def fun_feeds(self):
-        json = self.graph.get(self.url + '/feed?limit=' + str(self.no_of_posts) + '&since=' + str(self.time_gap) +"&fields=created_time,reactions.limit(0).summary(total_count),comments.limit(0).summary(total_count),message")["data"]
+        json = self.graph.get(self.url + '/feed?limit=' + str(self.no_of_posts) + '&since=' + str(self.time_gap) +"&fields=created_time,reactions.limit(0).summary(total_count),comments.limit(0).summary(total_count),message,link")["data"]
         for feed in json:
             post = {}
             post['reactions'] = int(feed["reactions"]["summary"]["total_count"])
@@ -30,28 +30,34 @@ class ggfb():
             post['timestamp'] = timegm(time.strptime(feed['created_time'], '%Y-%m-%dT%H:%M:%S+0000'))
             post['caption'] = feed.get('message')
             post['id'] = feed['id']
-            post['attachment'] = 'None'
+            post['channel']="fb"
+            post["attachment"]=None
+            if "link" in feed:
+              post['attachment'] = feed["link"]
             post['weight'] = 'None'
             post['type']="post"
             post['url'] = 'www.facebook.com' + str(feed['id'])
             post['embed'] = 'https://www.facebook.com/plugins/post.php?href=https%3A%2F%2Fwww.facebook.com%2F' + self.url + '%2Fposts%2F' + str(feed['id'].split('_')[1])
             posts.append(post.copy())
     def fun_images(self):
-        json = self.graph.get(self.url + '/photos?limit=' + str(self.no_of_posts) + '&since=' + str(self.time_gap) +"&fields=created_time,reactions.limit(0).summary(total_count),comments.limit(0).summary(total_count),message")["data"]
+        json = self.graph.get(self.url + '/photos?limit=' + str(self.no_of_posts) + '&since=' + str(self.time_gap) +"&fields=created_time,reactions.limit(0).summary(total_count),comments.limit(0).summary(total_count),message,link")["data"]
         for photo in json:
             image = {}
             image['reactions'] = int(photo['reactions']['summary']['total_count'])
             image['comments'] = int(photo['comments']['summary']['total_count'])
             image['timestamp'] = timegm(time.strptime(photo['created_time'], '%Y-%m-%dT%H:%M:%S+0000'))
             image['id'] = photo['id']
-            image['attachment'] = 'None'
+            image['channel']="fb"
+            image["attachment"]=None
+            if "link" in photo:
+              image['attachment'] = photo["link"]
             image['weight'] = 'None'
             image['type']='photo'
             image['url'] = 'www.facebook.com' + str(photo['id'])
             images.append(image)
 
     def fun_videos(self):
-        json = self.graph.get(self.url + '/videos?limit=' + str(self.no_of_posts) + '&since=' + str(self.time_gap) +"&fields=created_time,reactions.limit(0).summary(total_count),comments.limit(0).summary(total_count),description")["data"]
+        json = self.graph.get(self.url + '/videos?limit=' + str(self.no_of_posts) + '&since=' + str(self.time_gap) +"&fields=created_time,reactions.limit(0).summary(total_count),comments.limit(0).summary(total_count),description,link")["data"]
         for vid in json:
             video = {}
             video['reactions'] = int(vid['reactions']['summary']['total_count'])
@@ -59,7 +65,10 @@ class ggfb():
             video['timestamp'] = timegm(time.strptime(vid['created_time'], '%Y-%m-%dT%H:%M:%S+0000'))
             video['caption'] = vid.get('description')  ##very less captions
             video['id'] = vid['id']
-            video['attachment'] = 'None'
+            video["attachment"]=None
+            if "link" in vid:
+              video['attachment'] = vid["link"]
+            video['channel']="fb"
             video['weight'] = 'None'
             video['type']='video'
             video['url'] = 'www.facebook.com' + str(vid['id'])
