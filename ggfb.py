@@ -5,7 +5,7 @@ from calendar import timegm
 import requests
 import json
 
-TMP_TOKEN = 'EAACEdEose0cBACvYlc3kFWuOMotBFZBlCKkCmFoPt2BxT2GSzKAp5pqd7ImD7pku75rBft4ZCD9qDmDjhoiA7MoTrbkYpdNhAiZBssOQUy2A3g8vLZAyaOhn4eoSZBTaF4tMPe6uc1UvFhbVMZAPKMjNnN2SEbtxEYJoUjQ0dBXGsOTPyRIx1MD0ynZC0x2gJVMzUIWdRafvx2ugraX6gzR'
+TMP_TOKEN = open('token').read()
 PER_TOKEN = 'EAACEdEose0cBAE0k6aqICOz4lmPuF6IXKNSVLGRslY3e6ZAWC3ES2pChGXZA2e2IOCWyN1duUDQMXeZCtT5gKAM4CwQ2UOQjTWexnBxtW6BP5oNjHZBxdVZCx7Fce0CPF1IdRdmD1kzz3Mjb76fkvY1IWJAxsjW50C7oZAQOjAsHIc8TmaNCUI0hT2d3ZClWSeB2P0hIFQXbgZDZD'
 
 
@@ -33,7 +33,7 @@ class GGFB():
             post['weight'] = 'None'
             post['type']="post"
             post['url'] = 'www.facebook.com' + str(feed['id'])
-            post['embed'] = 'https://www.facebook.com/plugins/post.php?href=https%3A%2F%2Fwww.facebook.com%2F' + self.url + '%2Fposts%2F' + str(feed['id'].split('_')[1])
+            post['embed'] = "https://www.facebook.com/plugins/post.php?href=https%3A%2F%2Fwww.facebook.com%2F"+self.url+"%2Fposts%2F"+str(feed['id'].split('_')[1])
             self.posts.append(post.copy())
     def fun_images(self):
         json = self.graph.get(self.url + '/photos?limit=' + str(self.no_of_posts) + '&since=' + str(self.time_gap) +"&fields=created_time,reactions.limit(0).summary(total_count),comments.limit(0).summary(total_count),message,link")["data"]
@@ -80,12 +80,12 @@ class GGFB():
     def fun_all(self):
         
         self.fun_feeds()
-        self.fun_images()
-        self.fun_videos()
+        #self.fun_images()
+        #self.fun_videos()
         final_data = {'post': self.posts,
-             'photo': self.images,
-             'video': self.videos}
-        print len(final_data['post'])    
+             'photo': [],
+             'video': []}
+        
         return final_data
 
 if __name__ == '__main__':
