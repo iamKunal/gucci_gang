@@ -37,7 +37,7 @@ def get_tags(final_data):
 def get_world_cloud(topics):
     wordcloud = WordCloud(width=1920, height=1080, background_color="white").generate('\n'.join(topics))
     img = wordcloud.to_image()
-    path = '/tmp/' + str(timegm(datetime.utcnow().utctimetuple())) + '.png'
+    path = 'static/img/' + str(timegm(datetime.utcnow().utctimetuple())) + '.png'
     img.save(path)
     return path
 
