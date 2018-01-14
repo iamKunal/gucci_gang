@@ -49,12 +49,12 @@ class GGTwitter:
             temp_dict["retweets"] = int(tweet[unicode("retweet_count")])
             temp_dict["comment"] = tweet[unicode("text")].encode("utf-8")
             temp_dict["type"] = "post"
+            temp_dict["rate"]=float(temp_dict["likes"]+temp_dict['retweets'])/float(timegm(datetime.utcnow().utctimetuple())-temp_dict['timestamp'])
             if (unicode("media") in tweet[unicode("entities")]):
                 if (len(tweet[unicode("entities")][unicode("media")]) > 0):
                     temp_dict["type"] = tweet[unicode("entities")][unicode("media")][0]["type"].encode("utf-8")
                     temp_dict["attachment"] = tweet[unicode("entities")][unicode("media")][0]["media_url"].encode(
                         "utf-8")
-            print "Done"
             self.final_data[temp_dict["type"]].append(temp_dict)
 
     def evaluate_weight(self):
@@ -74,3 +74,4 @@ class GGTwitter:
 if __name__ == "__main__":
     o = GGTwitter(page='_kunalgupta_', seconds=60 * 60 * 24 * 30, no_of_posts=1)
     print o.final_data
+    

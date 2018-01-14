@@ -34,6 +34,7 @@ class GGFB():
             post['type']="post"
             post['url'] = 'www.facebook.com' + str(feed['id'])
             post['embed'] = "https://www.facebook.com/plugins/post.php?href=https%3A%2F%2Fwww.facebook.com%2F"+self.url+"%2Fposts%2F"+str(feed['id'].split('_')[1])
+            post['rate']=float(post['reactions']+post["comments"])/float(timegm(datetime.utcnow().utctimetuple())-post['timestamp'])
             self.posts.append(post.copy())
     def fun_images(self):
         json = self.graph.get(self.url + '/photos?limit=' + str(self.no_of_posts) + '&since=' + str(self.time_gap) +"&fields=created_time,reactions.limit(0).summary(total_count),comments.limit(0).summary(total_count),message,link")["data"]
@@ -48,6 +49,7 @@ class GGFB():
             image['weight'] = 'None'
             image['type']='photo'
             image['url'] = 'www.facebook.com' + str(photo['id'])
+            image['rate']=float(image['reactions']+image["comments"])/float(timegm(datetime.utcnow().utctimetuple())-image['timestamp'])
             self.images.append(image)
 
     def fun_videos(self):
@@ -65,6 +67,7 @@ class GGFB():
             video['type']='video'
             video['url'] = 'www.facebook.com' + str(vid['id'])
             video['embed'] = 'https://www.facebook.com/plugins/video.php?href=https%3A%2F%2Fwww.facebook.com%2F' + self.url + '%2Fvideos%2F' + str(vid['id']) + '%2F'
+            video['rate']=float(video['reactions']+video['comments'])/float(timegm(datetime.utcnow().utctimetuple())-video['timestamp'])
             self.videos.append(video)
 
     
@@ -89,5 +92,5 @@ class GGFB():
         return final_data
 
 if __name__ == '__main__':
-    fb_class = ggfb('wittyfeed', 60*60*24*30, 25)
+    fb_class = GGFB('wittyfeed', 60*60*24*30, 25)
     print(fb_class.fun_all())   ##this is to be finally returned

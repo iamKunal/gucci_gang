@@ -81,6 +81,7 @@ class GGInsta:
             temp_data['attachment'] = p['thumbnail_src']
             temp_data['weight'] = 100
             temp_data['comments'] = p['edge_media_to_comment']['count']
+            temp_data['rate']=float(temp_data['likes']+temp_data['comments'])/float(timegm(datetime.utcnow().utctimetuple())-temp_data['timestamp'])
             final_data[temp_data['type']].append(temp_data)
             # print temp_data
         return final_data
