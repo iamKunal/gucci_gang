@@ -1,7 +1,8 @@
 from bottle import run,route,template,request,static_file
 import ggtwitter , gginsta , ggfb
-
+import paralleliser
 rate_dic={}
+fb_gl=[]
 
 def total(fb,insta,twitter):
     
@@ -9,6 +10,15 @@ def total(fb,insta,twitter):
     video_total=[]
     photo_total=[]
     
+    if fb : 
+        fb=fb.replace(' ','').split(',')
+        for link in fb:
+            fb_dict = ggfb.GGFB(url=link,seconds=60*60*24*5, no_of_posts=10)
+            fb_dict=fb_dict.fun_all()
+            post_total += fb_dict['post']
+            global fb_gl
+            fb_gl=post_total
+
     if twitter:
         twitter=twitter.replace(' ','').split(',')
         for link in twitter:
@@ -17,12 +27,6 @@ def total(fb,insta,twitter):
             post_total+=twitter_dict['post']
             #video_total+= twitter_dict['video']
             photo_total += twitter_dict['photo']
-    if fb : 
-        fb=fb.replace(' ','').split(',')
-        for link in fb:
-            fb_dict = ggfb.GGFB(url=link,seconds=60*60*24*5, no_of_posts=10)
-            fb_dict=fb_dict.fun_all()
-            post_total += fb_dict['post']
              
     if insta:         
         insta=insta.split(',')
@@ -50,6 +54,14 @@ def img_static(filename):
 @route('/css/<filename>')
 def img_static(filename):
     return static_file(filename, root='./static/css')
+
+
+@route('/keywords')
+def wc():
+    path=paralleliser.get_tags(fb_gl)
+    return template('wordsc', picture=path)
+
+
 
 
 @route('/rate')
@@ -95,9 +107,7 @@ def site():
         elif post['channel']=='insta':
                 embed.append(['insta',post['url']])
         elif post['channel']=='twitter':
-                embed.append(['twitter',post['url']])
-
-            
+                embed.append(['twitter',post['url']])         
 
     
     

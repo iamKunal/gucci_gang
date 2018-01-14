@@ -28,8 +28,8 @@ def get_tags(final_data):
 #    fb_class = GGFB('WittyFeed', 60 * 60 * 24 * 30, 15)
 #    final_data = fb_class.fun_all()
 
-    p = multiprocessing.Pool(len(final_data['post']), init_workers)
-    topics = p.map(f, final_data['post'])
+    p = multiprocessing.Pool(len(final_data), init_workers)
+    topics = p.map(f, final_data)
     topics = [item.strip() for sublist in topics for item in sublist]
     topics = filter(lambda x: x!='', topics)
     print topics
@@ -40,6 +40,6 @@ def get_world_cloud(topics):
     path = 'static/img/' + str(timegm(datetime.utcnow().utctimetuple())) + '.png'
     img.save(path)
     return path
-
-print get_tags(GGFB('WittyFeed', 60 * 60 * 24 * 30, 15).fun_all())
+if __name__=='__main__':
+    print get_tags(GGFB('WittyFeed', 60 * 60 * 24 * 30, 15).fun_all())
 
