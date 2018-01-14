@@ -20,8 +20,6 @@ def f(x):
 
 
 if __name__ == '__main__':
-    start = 0
-
     fb_class = GGFB('WittyFeed', 60 * 60 * 24 * 30, 25)
     final_data = fb_class.fun_all()
 
