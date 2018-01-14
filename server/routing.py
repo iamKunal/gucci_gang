@@ -1,42 +1,16 @@
 from bottle import run,route,template,request,static_file
 import ggtwitter , gginsta , ggfb
 
+rate_dic={}
 
-
-
-
-@route('/js/<filename>')
-def js_static(filename):
-    return static_file(filename, root='./static/js')
-
-
-@route('/img/<filename>')
-def img_static(filename):
-    return static_file(filename, root='./static/img')
-
-
-@route('/css/<filename>')
-def img_static(filename):
-    return static_file(filename, root='./static/css')
-
-
-
-@route('/')
-def index():
-	return template('index')
-
-@route('/site',method='POST')
-def site():
-	embed=[]
-	fb=request.POST.get('fb')
-	insta=request.POST.get('insta')
-	twitter=request.POST.get('twitter')	
-	print type(fb)
+def total(fb,insta,twitter):
+	
 	post_total=[]
 	video_total=[]
 	photo_total=[]
+	
 	if twitter:
-		
+		twitter=twitter.replace(' ','').split(',')
 		for link in twitter:
 			twitter_dict = ggtwitter.GGTwitter(page=link,seconds=60*60*24*5, no_of_posts=5) 	
 			twitter_dict = twitter_dict.final_data
@@ -60,8 +34,58 @@ def site():
 
 
 
-	final_dict=post_total+video_total+photo_total
+	return post_total+video_total+photo_total
 
+
+@route('/js/<filename>')
+def js_static(filename):
+    return static_file(filename, root='./static/js')
+
+
+@route('/img/<filename>')
+def img_static(filename):
+    return static_file(filename, root='./static/img')
+
+
+@route('/css/<filename>')
+def img_static(filename):
+    return static_file(filename, root='./static/css')
+
+
+@route('/rate')
+	def rate():
+		final_dict=rate_dic.copy()
+		final_dict = sorted(final_dict, key=lambda k: k['rate'], reverse=True)
+		for post in final_dict:
+			if post['channel']=='fb':
+				#a,b=post['embed'].split('_')
+				embed.append(['fb',post['embed'],post['rate']])
+			elif post['channel']=='insta':
+				embed.append(['insta',post['url'],post['rate']])
+			elif post['channel']=='twitter':
+				embed.append(['twitter',post['url'],post['rate']])
+
+			
+
+	
+	
+	return template('rate',emb=embed)
+
+
+@route('/')
+def index():
+	return template('index')
+
+@route('/site',method='POST')
+def site():
+	fb=request.POST.get('fb')
+	insta=request.POST.get('insta')
+	twitter=request.POST.get('twitter')
+	final_dict=total(fb,insta,twitter)
+ 	global rate_dic 
+ 	rate_dic = final_dict	
+	embed=[]
+	
 
 	final_dict = sorted(final_dict, key=lambda k: k['timestamp'], reverse=True)
 	for post in final_dict:
