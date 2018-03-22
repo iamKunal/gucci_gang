@@ -1,6 +1,6 @@
 # gucci_gang
 
-gucci_gang is a Live Social Stream Analyser that integrated multiple live streams into a single stream.
+Gucci_Gang is a Live Social Stream Analyser that integrated multiple live streams into a single stream.
 
 
 # Usage
